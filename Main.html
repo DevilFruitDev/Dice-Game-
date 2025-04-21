@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .dice-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .dice-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .dice-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .dice {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 10px;
+            border: 2px solid #333;
+            display: grid;
+            position: relative;
+        }
+        
+        /* Dice dot styling */
+        .dot {
+            width: 16px;
+            height: 16px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        /* Different dot positions for each dice value */
+        .dice-1 .dot-1 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .dice-2 .dot-1 { top: 25%; left: 25%; }
+        .dice-2 .dot-2 { bottom: 25%; right: 25%; }
+        
+        .dice-3 .dot-1 { top: 25%; left: 25%; }
+        .dice-3 .dot-2 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-3 .dot-3 { bottom: 25%; right: 25%; }
+        
+        .dice-4 .dot-1 { top: 25%; left: 25%; }
+        .dice-4 .dot-2 { top: 25%; right: 25%; }
+        .dice-4 .dot-3 { bottom: 25%; left: 25%; }
+        .dice-4 .dot-4 { bottom: 25%; right: 25%; }
+        
+        .dice-5 .dot-1 { top: 25%; left: 25%; }
+        .dice-5 .dot-2 { top: 25%; right: 25%; }
+        .dice-5 .dot-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-5 .dot-4 { bottom: 25%; left: 25%; }
+        .dice-5 .dot-5 { bottom: 25%; right: 25%; }
+        
+        .dice-6 .dot-1 { top: 25%; left: 25%; }
+        .dice-6 .dot-2 { top: 25%; right: 25%; }
+        .dice-6 .dot-3 { top: 50%; left: 25%; transform: translateY(-50%); }
+        .dice-6 .dot-4 { top: 50%; right: 25%; transform: translateY(-50%); }
+        .dice-6 .dot-5 { bottom: 25%; left: 25%; }
+        .dice-6 .dot-6 { bottom: 25%; right: 25%; }
+        
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            height: 36px;
+        }
+        
+        .win { color: #4CAF50; }
+        .lose { color: #F44336; }
+        .tie { color: #2196F3; }
+        
+        .buttons {
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        #roll-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #roll-btn:hover {
+            background-color: #45a049;
+        }
+        
+        #reset-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #reset-btn:hover {
+            background-color: #da190b;
+        }
+        
+        .stats {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .stats h3 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .stats p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Dice Game</h1>
+        
+        <div class="dice-container">
+            <div class="dice-box">
+                <div class="dice-label">You</div>
+                <div id="player-dice" class="dice dice-1">
+                    <span class="dot dot-1"></span>
+                </div>
+            </div>
+            
+            <div class="dice-box">
+                <div class="dice-label">Opponent</div>
+                <div id="opponent-dice" class="dice dice-1">
+                    <span class="dot dot-1"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="buttons">
+            <button id="roll-btn">Roll Dice</button>
+            <button id="reset-btn">Reset Game</button>
+        </div>
+        
+        <div class="stats">
+            <h3>Game Stats</h3>
+            <p>Games Played: <span id="games-played">0</span></p>
+            <p>Wins: <span id="wins">0</span></p>
+            <p>Losses: <span id="losses">0</span></p>
+            <p>Ties: <span id="ties">0</span></p>
+            <p>Win Rate: <span id="win-rate">0</span>%</p>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let gameCount = 0;
+        let wins = 0;
+        let losses = 0;
+        let ties = 0;
+        
+        // DOM Elements
+        const playerDice = document.getElementById('player-dice');
+        const opponentDice = document.getElementById('opponent-dice');
+        const resultDisplay = document.getElementById('result');
+        const rollButton = document.getElementById('roll-btn');
+        const resetButton = document.getElementById('reset-btn');
+        const gamesPlayedElement = document.getElementById('games-played');
+        const winsElement = document.getElementById('wins');
+        const lossesElement = document.getElementById('losses');
+        const tiesElement = document.getElementById('ties');
+        const winRateElement = document.getElementById('win-rate');
+        
+        // Function to roll dice (random number between 1-6)
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+        
+        // Function to update dice display based on value
+        function updateDiceDisplay(diceElement, value) {
+            // Remove all current dice classes
+            for (let i = 1; i <= 6; i++) {
+                diceElement.classList.remove(`dice-${i}`);
+            }
+            
+            // Add the new dice class
+            diceElement.classList.add(`dice-${value}`);
+            
+            // Remove existing dots
+            while (diceElement.firstChild) {
+                diceElement.removeChild(diceElement.firstChild);
+            }
+            
+            // Add new dots
+            for (let i = 1; i <= value; i++) {
+                const dot = document.createElement('span');
+                dot.classList.add('dot', `dot-${i}`);
+                diceElement.appendChild(dot);
+            }
+        }
+        
+        // Handle the roll button click
+        rollButton.addEventListener('click', function() {
+            const playerRoll = rollDice();
+            const opponentRoll = rollDice();
+            
+            updateDiceDisplay(playerDice, playerRoll);
+            updateDiceDisplay(opponentDice, opponentRoll);
+            
+            gameCount++;
+            gamesPlayedElement.textContent = gameCount;
+            
+            // Determine the winner
+            if (playerRoll > opponentRoll) {
+                resultDisplay.textContent = 'You win!';
+                resultDisplay.className = 'result win';
+                wins++;
+                winsElement.textContent = wins;
+            } else if (playerRoll < opponentRoll) {
+                resultDisplay.textContent = 'Opponent wins!';
+                resultDisplay.className = 'result lose';
+                losses++;
+                lossesElement.textContent = losses;
+            } else {
+                resultDisplay.textContent = "It's a tie!";
+                resultDisplay.className = 'result tie';
+                ties++;
+                tiesElement.textContent = ties;
+            }
+            
+            // Update win rate
+            const winRate = gameCount > 0 ? Math.round((wins / gameCount) * 100) : 0;
+            winRateElement.textContent = winRate;
+        });
+        
+        // Reset the game
+        resetButton.addEventListener('click', function() {
+            gameCount = 0;
+            wins = 0;
+            losses = 0;
+            ties = 0;
+            
+            updateDiceDisplay(playerDice, 1);
+            updateDiceDisplay(opponentDice, 1);
+            
+            resultDisplay.textContent = '';
+            resultDisplay.className = 'result';
+            
+            gamesPlayedElement.textContent = gameCount;
+            winsElement.textContent = wins;
+            lossesElement.textContent = losses;
+            tiesElement.textContent = ties;
+            winRateElement.textContent = '0';
+        });
+    </script>
+</body>
+</html>
